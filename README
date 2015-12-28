@@ -31,3 +31,7 @@ because the syslog protocol is not so great.)
 
 Anyway, the end result is that I wanted my own syslogd to log these
 messages, and here it is.
+
+Confuration consists of creating directories (or links to directories) for
+each host IP you want to log for, and in these directories you get files
+named %Y-%m-%d.log. The timestamp in the message is ignored.
