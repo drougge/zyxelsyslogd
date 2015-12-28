@@ -20,15 +20,20 @@ args = p.parse_args()
 sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
 sock.bind((args.host, args.port,))
 
+def dropped(reason, data):
+	print "Dropped %d bytes (%s): %r" % (len(data), reason, data,)
+
 while True:
 	data, (saddr, sport) = sock.recvfrom(4096)
 	try:
 		pri, _, _, _, _, host, msg = data.split(None, 6)
 		if host != saddr:
 			# Broken message / not from the host it claims, drop it
+			dropped("addr mismatch", data)
 			continue
 		if not isdir(host):
 			# Not from something we expect logs from
+			dropped("unknown host", data)
 			continue
 		# Reformat pri to be a little more readable:
 		# facility.level, but still numeric.
@@ -41,4 +46,4 @@ while True:
 		with open(join(host, date[:10] + ".log"), "ab") as fh:
 			fh.write(logline)
 	except (ValueError, IOError,):
-		pass
+		dropped("internal error", data)
