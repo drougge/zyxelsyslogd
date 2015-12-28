@@ -1,0 +1,33 @@
+I have a ZyXEL GS1900-24 switch, which can send various messages to a
+syslog server. Regrettably it does not seem to agree with my syslogd (from
+NetBSD) on how such messages are to be formatted.
+
+Here's an example message it sends:
+
+"<135> Dec 28 2015 03:36:43 192.168.1.1 %Port-7: Port 18 duplex is set to force Full "
+
+It's pretty clear to a human reader what this is trying to say. It's using
+the traditional BSD syslog protocol (RFC 3164, not the new RFC 5424), it's
+a local0.debug message sent on Dec 28 2015 03:36:43 from 192.168.1.1 with
+the message "%Port-7: Port 18 duplex is set to force Full", plus an extra
+space at the end.
+
+But of course that's not what it's really saying if you read the spec. No,
+this message contains no date, and it's sent from the host "Dec". The
+message is missing the TAG field, and the end result is you get this in
+your log file:
+
+"Dec 28 03:36:43 Dec -:  2015 03:36:43 192.168.1.1 %Port-7: Port 18 duplex is set to force Full "
+
+while I had hoped for something more like this:
+
+"Dec 28 03:36:43 192.168.1.1 %Port-7: Port 18 duplex is set to force Full "
+
+which would actually let me match on the host part for selecting which file
+it goes to.
+
+All this because there's a space after the PRI part. (And possibly also
+because the syslog protocol is not so great.)
+
+Anyway, the end result is that I wanted my own syslogd to log these
+messages, and here it is.
