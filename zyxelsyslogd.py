@@ -10,9 +10,15 @@
 from socket import socket, AF_INET, SOCK_DGRAM, IPPROTO_UDP
 from os.path import isdir, join
 from datetime import datetime
+from argparse import ArgumentParser
+
+p = ArgumentParser()
+p.add_argument('--host', type=str, help='listen host', default='')
+p.add_argument('--port', type=int, help='listen port', default=514)
+args = p.parse_args()
 
 sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-sock.bind(('', 514))
+sock.bind((args.host, args.port,))
 
 while True:
 	data, (saddr, sport) = sock.recvfrom(4096)

@@ -35,3 +35,6 @@ messages, and here it is.
 Confuration consists of creating directories (or links to directories) for
 each host IP you want to log for, and in these directories you get files
 named %Y-%m-%d.log. The timestamp in the message is ignored.
+
+You can also optionally pass --host and/or --port to the daemon, to bind to
+something other than ('', 514).
